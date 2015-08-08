@@ -1,0 +1,15 @@
+/*<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">*/
+
+.container-fluid {
+  margin:0 auto;
+  width:50%;
+}
+
+.error {
+  color: #FF0000;
+}
+
+.dynamicTabs md-content {margin: 0 16px 0 16px;}
+.dynamicTabs md-content .md-subheader-inner {padding-left:0;}
+
+.btnRow {min-height: 100px;}
