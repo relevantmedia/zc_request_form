@@ -43,7 +43,7 @@
                 </md-radio-group>
               </md-input-container>
               <div class="btnRow" layout="row" layout-align="end center">
-                <md-button class="md-raised md-primary" ng-disabled="requestForm.phone.$invalid || form.checkType()" ng-click="form.saveRequest(form.request, 'details', 1)">Details ></md-button>
+                <md-button class="md-raised md-primary" ng-disabled="form.checkType()" ng-click="form.saveRequest(form.request, 'details', 1)">Details ></md-button>
               </div>
             </md-content>
           </md-tab>
@@ -85,7 +85,7 @@
               <div class="printForm" ng-show="form.request.type == 'Print' || form.request.type == 'Design'">
                 <md-input-container>
                   <md-subheader class="md-primary">Format Type</md-subheader>
-                  <md-radio-group ng-model="form.request.format.type">
+                  <md-radio-group name="formatType" required ng-model="form.request.format.type">
                     <md-radio-button ng-repeat="format in form.fields.formats.printFormats" value="{{format.title}}" class="md-primary">{{format.content}}</md-radio-button>
                     <md-radio-button ng-repeat="format in form.fields.formats.designFormats" value="{{format.title}}" class="md-primary" ng-show="form.request.type == 'Design'">{{format.content}}</md-radio-button>
                   </md-radio-group>
@@ -133,7 +133,7 @@
                 </md-input-container>
                 <div class="btnRow" layout="row" layout-align="space-between end">
                   <md-button class="md-primary" ng-click="form.tabs.selectedIndex = 0">< Back</md-button>
-                  <md-button class="md-raised md-primary" layout-align="end center" ng-disabled="" ng-click="form.saveRequest(form.request, 'delivery', 2)">Delivery ></md-button>
+                  <md-button class="md-raised md-primary" layout-align="end center" ng-disabled="requestForm.formatType.$invalid" ng-click="form.saveRequest(form.request, 'delivery', 2)">Delivery ></md-button>
                 </div>
               </div>
               <div class="techForm" ng-show="form.request.type == 'Tech'">
