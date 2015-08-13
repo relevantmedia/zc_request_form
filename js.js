@@ -1,21 +1,32 @@
 var app = angular.module('zcRequest', ['ngMaterial','ngMessages','ngAnimate']);
 
 app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFormCtrl($scope, $mdDialog) {
-  var form = this;
+  //var form = $scope;
+  
+  $scope.getUser = function() {
+    google.script.run.withSuccessHandler(User).User(); 
+  }
+  function User(user) {
+    if(Object.keys(user).length > 0){
+        $scope.request = {};
 
-  this.tabs = {
+      $scope.request.staff = {
+        name: user.name,
+        email: user.email
+      };
+      console.log($scope.request.staff);
+      $scope.$apply();
+    }
+  }
+
+  $scope.tabs = {
     selectedIndex: 0,
     details:true,
     delivery:true
   }
-  this.hello = 'Hello World!';
-  this.request = {};
-  this.request.staff = {
-  name:'Ryan Strandt',
-  email:'ryan.strandt@cru.org'
-  };
+  //$scope.hello = 'Zero Canvas Request Form';
 
-  this.fields = {
+  $scope.fields = {
     requestTypes: [
       {title:'Print', content:'Print (document is already created)'},
       {title:'Design', content:'Design (document needs to be created)'},
@@ -89,22 +100,16 @@ app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFor
     }
   }
 
-  this.checkType = function checkType() {
-    if(this.request.type == null) {
-      return true;
-    } else return false;
-  }
-
-  this.saveRequest = function(newRequest, tab, index) {
-    if(newRequest) { this.request = newRequest; }
-    if(tab) { this.tabs[tab] = false; }
-    if(index) { this.tabs.selectedIndex = index; }
+  $scope.saveRequest = function(newRequest, tab, index) {
+    if(newRequest) { $scope.request = newRequest; }
+    if(tab) { $scope.tabs[tab] = false; }
+    if(index) { $scope.tabs.selectedIndex = index; }
   }
 
   //build submit function to open loading dialog
-  this.submitRequest = function submit(request) {
+  $scope.submitRequest = function submit(request) {
     // Appending dialog to document.body to cover window
-    var loading = $mdDialog.confirm({
+    var loading = {
       template: '<md-dialog> \
                   <md-dialog-content> \
                   <p>We are submitting your request.</p> \
@@ -113,20 +118,20 @@ app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFor
                    </div> \
                   </md-dialog-content> \
                   </md-dialog>',
-      parent: angular.element(document.body)
-    });
+      parent: angular.element(document.body),
+      onComplete: afterShowAnimation
+    };
+    
+    function afterShowAnimation() {
+      if(request) { $scope.request = request; }
+      google.script.run.withSuccessHandler(requestCreated).createTrelloCard($scope.request);
+    }
 
-    $mdDialog.show(loading).then(function() { this.createTrelloCard(request) }, '');
+    $mdDialog.show(loading);
   }
 
   function requestCreated() {
     $mdDialog.hide();
-  }
-
-
-  this.createTrelloCard = function submit(newRequest) {
-    if(newRequest) { this.request = newRequest; }
-    google.script.run.withSuccessHandler(requestCreated).createTrelloCard(this.request);
   }
 
 }]);
