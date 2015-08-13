@@ -1,0 +1,30 @@
+<div class="webForm" ng-show="request.type == 'Web'">
+  <form id="webForm" name="webForm">
+    <md-input-container>
+      <label>Project Title</label>
+      <input name="title" required type="text" class="requestTitle" ng-model="request.title" md-maxlength="50">
+      <div ng-messages="webForm.title.$error" ng-show="webForm.title.$invalid && webForm.title.$touched">
+        <div ng-message="required">Please give your project a Name.</div>
+      </div>
+    </md-input-container>
+    <div>
+      <h2 class="md-headline">Check all that you are interested in:</h2>
+    </div>
+    <div id="webservices" layout="column">
+      <div ng-repeat="service in fields.webServices" class="standard" flex="50">
+        <label>
+          <input type="checkbox" ng-checked="exists(service.title, webServices)" ng-click="toggle(service.title, webServices)"/>
+          {{ service.title }}
+        </label>
+      </div>
+    </div>
+    <md-input-container>
+      <label>Other Helpful Info (examples of desired look, existing content to be included, etc.)</label>
+      <textarea name="webInfo" required md-maxlength="250" id="webInfo" ng-model="request.web.info"></textarea>
+    </md-input-container>
+    <div class="btnRow" layout="row" layout-align="space-between center">
+      <md-button class="md-primary" ng-click="tabs.selectedIndex = 0">< Back</md-button>
+      <md-button class="md-raised md-primary" ng-disabled="webForm.$invalid" ng-click="saveRequest(request, 'delivery', 2)">Delivery ></md-button>
+    </div>
+  </form>
+</div>

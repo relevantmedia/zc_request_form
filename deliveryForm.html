@@ -1,0 +1,41 @@
+<div class="productionDelivery">
+  <form id="deliveryForm" name="deliveryForm">
+    <h1 class="md-primary md-display-1">Delivery options:</h1>
+    <md-input-container ng-show="request.type == 'Print' || request.type == 'Design'">
+      <h2 class="md-headline">Local pickup or address to be shipped to?</h2>
+      <md-radio-group ng-model="request.delivery">
+        <md-radio-button value="local" class="md-primary">Local Pickup</md-radio-button>
+        <md-radio-button value="ship" class="md-primary">Ship to an address</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+    <div class="address" ng-show="request.delivery == 'ship'">
+      <md-subheader class="md-primary">Address</md-subheader>
+      <md-input-container ng-repeat="field in fields.address">
+        <label>{{field.title}}</label>
+        <input name="field.title" type="text" ng-model="request.address[field.title]">
+        <div ng-messages="requestForm[field.name].$error" ng-show="requestForm[field.name].$invalid && requestForm[field.name].$touched">
+          <div ng-message="required">Please enter your {{field.name}}</div>
+        </div>
+      </md-input-container>
+    </div>
+    <md-input-container>            
+      <label>Desired Completion Date</label>
+      <input name="completionDate" required type="date" id="completionDate" ng-model="request.completionDate">
+      <div ng-messages="requestForm.completionDate.$error" ng-show="requestForm.completionDate.$invalid && requestForm.completionDate.$touched">
+        <div ng-message="required">Please let us know your deadline.</div>
+      </div>
+    </md-input-container>
+    <md-subheader class="md-primary">Chartfield to be charged for printing, shipping or web hosting if applicable</md-subheader>
+    <md-input-container ng-repeat="field in fields.chartfield">
+      <label>{{field.title}}</label>
+      <input name="field.title" required type="text" ng-model="request.chartfield[field.title]">
+      <div ng-messages="deliveryForm[field.name].$error" ng-show="deliveryForm[field.name].$invalid && deliveryForm[field.name].$touched">
+        <div ng-message="required">Please enter your {{field.name}}</div>
+      </div>
+    </md-input-container>
+    <div class="btnRow" layout="row" layout-align="space-between center">
+      <md-button class="md-primary" ng-click="tabs.selectedIndex = 1">< Back</md-button>
+      <md-button class="md-raised md-primary" ng-disabled="deliveryForm.$invalid" ng-click="submitRequest(request)">Submit Request ></md-button>
+    </div>
+  </form>
+</div>
