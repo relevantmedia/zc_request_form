@@ -1,274 +1,47 @@
 <html ng-app="zcRequest">
-<head>
-<!-- <?!= include('style'); ?> -->
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
-<link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-  <div ng-controller="zcRequestFormCtrl as form" class="container-fluid md-whiteframe-z1">
-    <md-toolbar md-theme="{{tab.mdTheme}}">
-      <div class="md-toolbar-tools">              
-        <md-button class="md-icon-button" aria-label="Settings">
-          <md-icon md-svg-icon="https://s3.amazonaws.com/cru-spot/img/icons/menu.svg"></md-icon>
-        </md-button>
-        <h2><span>{{form.hello}}</span></h2>
-      </div>
+  <head>
+    <?!= include('style'); ?>
+  </head>
+  <body>
+  <div ng-controller="zcRequestFormCtrl" ng-init="getUser()" class="container-fluid md-whiteframe-z1">
+    <md-toolbar layout="row" layout-align="space-between center" class="md-tall" md-theme="">   
+      <h1 id="formtitle" class="md-display-1">Zero Canvas Request Form</h1>
+      <img id="zclogo" src="https://s3.amazonaws.com/glr-glc/logos/zclogos/logo_white_small.png"/>
     </md-toolbar>
-    <md-toolbar class="md-warn md-hue-3" ng-show="error" ng-click="removeError()">
+    <md-toolbar class="md-warn md-hue-3" ng-show="error" ng-click="removeError()" ng-cloak>
       <span flex></span>
       <h2 class="md-toolbar-tools md-toolbar-tools-bottom">
-        <span class="md-flex">{{form.errorMsg}}</span>
+        <span class="md-flex">{{errorMsg}}</span>
       </h2>
     </md-toolbar>
-    <div class="dynamicTabs">
-      <md-tabs md-dynamic-height md-border-bottom md-selected="form.tabs.selectedIndex">
+    <div class="dynamicTabs" ng-hide="requestSubmitted">
+      <md-tabs md-dynamic-height md-border-bottom md-selected="tabs.selectedIndex">
         <md-tab label="Personal">
           <md-content class="md-padding">
-            <form id="requestForm" name="requestForm">
-              <md-subheader class="md-primary">Unread Messages</md-subheader>
-              <p>{{form.request.staff.name}}</p>
-              <p>{{form.request.staff.email}}</p>
-
-              <md-input-container>
-                <label>Phone</label>
-                <input name="phone" required type="text" id="staffPhone" ng-model="form.request.staff.phone">
-                <div ng-messages="requestForm.phone.$error" ng-show="requestForm.phone.$invalid && requestForm.phone.$touched">
-                  <div ng-message="required">Please enter your phone number.</div>
-                </div>
-              </md-input-container>
-              <md-input-container>
-                <p>Type of Request</p>
-                <md-radio-group required ng-model="form.request.type">
-                  <md-radio-button ng-repeat="type in form.fields.requestTypes" value="{{type.title}}" class="md-primary">{{type.content}}</md-radio-button>
-                </md-radio-group>
-              </md-input-container>
-              <div class="btnRow" layout="row" layout-align="end center">
-                <md-button class="md-raised md-primary" ng-disabled="requestForm.$invalid" ng-click="form.saveRequest(form.request, 'details', 1)">Details ></md-button>
-              </div>
-            </form>
+            <?!= include('requestForm'); ?>
           </md-content>
         </md-tab>
-        <md-tab label="Details" ng-disabled="form.tabs.details">
+        <md-tab label="Details" ng-disabled="tabs.details">
           <md-content class="md-padding">
-            <div id="typeHeader">
-              <div id="printTitle" ng-show="form.request.type == 'Print'">
-                <h1>Print Request</h1>
-                <h5>Please have your document Ready for printing. If you need it created, go back and change the type of request to design.</h5>
-              </div>
-              <div id="designTitle" ng-show="form.request.type == 'Design'">
-                <h1>Design Request</h1>
-                <h5>Need help with a design for your awesome idea or outreach? This form is the starting point to making your dream a reality.</h5>
-              </div>
-              <div id="techTitle" ng-show="form.request.type == 'Tech'">
-                <h1>Tech Request</h1>
-                <p>The Genius Bar has regular operating hours. If you need assistance outside of those times, please fill out the form below.</p>
-              </div>
-              <div id="webTitle" ng-show="form.request.type == 'Web'">
-                <h1>Web Request</h1>
-                <p>Need help building a new site or improving an existing one? We can help you manage your digital footprint with design, hosting, domain or app all in one place.</p>
-                <h4>Informed Consent</h4>
-                <ul>
-                <li>Cost - hosting/management and administration: $5 per month (domain $12/year if not already owned)</li>
-                <li>Training - we expect staff (and selected student leaders) to currate content. We will give support remotely via google hangout/phone and email when needed.</li>
-                <li>Communication & Timing - we desire prompt and clear communication to serve you in a timely manner</li>
-                </ul>
-              </div>
-            </div>
-            <div class="printForm" ng-show="form.request.type == 'Print' || form.request.type == 'Design'">
-              <form id="printForm" name="printForm">
-                <md-input-container>
-                  <label>Project Title</label>
-                  <input name="title" required type="text" class="requestTitle" ng-model="form.request.title" md-maxlength="50">
-                  <div ng-messages="printForm.title.$error" ng-show="printForm.title.$invalid && printForm.title.$touched">
-                    <div ng-message="required">Please give your project a Name.</div>
-                  </div>
-                </md-input-container>
-                <md-input-container>
-                  <md-subheader class="md-primary">Format Type</md-subheader>
-                  <md-radio-group name="formatType" required ng-model="form.request.format.type">
-                    <md-radio-button ng-repeat="format in form.fields.formats.printFormats" value="{{format.title}}" class="md-primary">{{format.content}}</md-radio-button>
-                    <md-radio-button ng-repeat="format in form.fields.formats.designFormats" value="{{format.title}}" class="md-primary" ng-show="form.request.type == 'Design'">{{format.content}}</md-radio-button>
-                  </md-radio-group>
-                </md-input-container>
-                <md-input-container>
-                  <md-subheader class="md-primary">
-                    Desired Size of one piece (in inches)
-                    <p class="description">(not what size paper it is necessarily printer on, but the desired size of the end result)</p>
-                  </md-subheader>
-                  <md-radio-group name="formatSize" required ng-model="form.request.format.size">
-                    <md-radio-button ng-repeat="layout in form.fields.layouts" value="{{layout.title}}" class="md-primary">{{layout.content}}</md-radio-button>
-                    <md-input-container>
-                      <label>Other</label>
-                      <input type="text"></input>
-                    </md-input-container>
-                  </md-radio-group>
-                </md-input-container>
-                <md-input-container>
-                  <md-subheader class="md-primary">Printed in Color or Black & White</md-subheader>              
-                  <md-radio-group name="formatColor" required ng-model="form.request.format.color">
-                    <md-radio-button value="color" class="md-primary">Color - (.12 / sheet)</md-radio-button>
-                    <md-radio-button value="b/w" class="md-primary">Black & White - (.03 / sheet)</md-radio-button>
-                  </md-radio-group>
-                </md-input-container>
-                <md-input-container>
-                  <md-subheader class="md-primary">Desired type of paper to be used</md-subheader>
-                  <md-radio-group name="formatPaper" required ng-model="form.request.format.paper">
-                    <md-radio-button value="copy" class="md-primary">Copy paper (20 lb) - no extra charge</md-radio-button>
-                    <md-radio-button value="coated-copy" class="md-primary">Coated copy paper (20 lb) - add .05 / sheet</md-radio-button>
-                    <md-radio-button value="heavyweight" class="md-primary">Cardstock (80-100 lb) - add .03 / sheet</md-radio-button>
-                    <md-radio-button value="coated-heavyweight" class="md-primary">Coated cardstock (200 lb) - add .09 / sheet</md-radio-button>
-                  </md-radio-group>
-                </md-input-container>
-                <md-input-container>
-                  <label>Other Helpful Info (examples of desired look, existing content to be included, etc.)</label>
-                  <textarea name="otherInfo" md-maxlength="250" id="otherInfo" ng-model="form.request.description"></textarea>
-                </md-input-container>
-                <md-input-container>
-                  <label>Quantity</label>
-                  <input name="quantity" required type="number" id="quantity" ng-model="form.request.quantity" min="50">
-                  <div ng-messages="printForm.quantity.$error" ng-show="printForm.quantity.$invalid && printForm.quantity.$touched">
-                    <div ng-message="required">Please let us know how many you need.</div>
-                    <div ng-message="min">Quantity needs to be a minimum of 50.</div>
-                  </div>
-                </md-input-container>
-                <div class="btnRow" layout="row" layout-align="space-between end">
-                  <md-button class="md-primary" ng-click="form.tabs.selectedIndex = 0">< Back</md-button>
-                  <md-button class="md-raised md-primary" layout-align="end center" ng-disabled="printForm.$invalid" ng-click="form.saveRequest(form.request, 'delivery', 2)">Delivery ></md-button>
-                </div>
-              </div>
-            </form>
-            <div class="techForm" ng-show="form.request.type == 'Tech'">
-              <form id="techForm" name="techForm">
-                <md-input-container>
-                  <label>Title / Issue</label>
-                  <input name="title" required type="text" class="requestTitle" ng-model="form.request.title" md-maxlength="50">
-                  <div ng-messages="techForm.title.$error" ng-show="techForm.title.$invalid && techForm.title.$touched">
-                    <div ng-message="required">Please give your project a Name.</div>
-                  </div>
-                </md-input-container>
-                <md-input-container>
-                  <label>Full Description</label>
-                  <textarea name="description" md-maxlength="500" id="printdescription" ng-model="form.request.description"></textarea>
-                </md-input-container>
-                <md-subheader class="md-primary">Computer Specs</md-subheader>
-                <md-input-container>
-                  <md-subheader class="md-primary">Manufacturer</md-subheader>
-                  <md-radio-group name="computerMake" required ng-model="form.request.specs.make">
-                    <md-radio-button ng-repeat="make in form.fields.techSpecs.makes" value="{{make.manufacturer}}" class="md-primary">{{make.manufacturer}}</md-radio-button>
-                  </md-radio-group>
-                </md-input-container>
-                <div class="techModel" ng-show="form.request.specs.make">
-                  <md-subheader class="md-primary">Model</md-subheader>
-                  <md-input-container ng-show="['Apple','Dell'].indexOf(form.request.specs.make) >=0">
-                    <md-radio-group name="computerModel" required ng-model="form.request.specs.model">
-                      <md-radio-button ng-repeat="model in form.fields.techSpecs.makes[0].models" value="{{model.model}}" class="md-primary" ng-show="form.request.specs.make == 'Apple'">{{model.model}}</md-radio-button>
-                      <md-radio-button ng-repeat="model in form.fields.techSpecs.makes[1].models" value="{{model.model}}" class="md-primary" ng-show="form.request.specs.make == 'Dell'">{{model.model}}</md-radio-button>
-                    </md-radio-group>
-                  </md-input-container>
-                  <md-input-container ng-show="form.request.specs.make == 'Other PC'">
-                    <label>give a brief description of your machine</label>
-                    <input name="otherPC" type="text" ng-model="form.request.specs.model">
-                  </md-input-container>
-                </div>
-                <div class="techOS" ng-show="form.request.specs.make">
-                  <md-subheader class="md-primary">Operation System</md-subheader>
-                  <md-input-container ng-show="['Apple','Dell'].indexOf(form.request.specs.make) >=0">
-                    <md-radio-group name="computerOS" required ng-model="form.request.specs.operating_system">
-                      <md-radio-button ng-repeat="system in form.fields.techSpecs.makes[0].system" value="{{system.os}}" class="md-primary" ng-show="form.request.specs.make == 'Apple'">{{system.os}}</md-radio-button>
-                      <md-radio-button ng-repeat="system in form.fields.techSpecs.makes[1].system" value="{{system.os}}" class="md-primary" ng-show="form.request.specs.make == 'Dell'">{{system.os}}</md-radio-button>
-                    </md-radio-group>
-                  </md-input-container>
-                  <md-input-container ng-show="form.request.specs.make == 'Other PC'">
-                    <label>let us know what operating system you are running</label>
-                    <input name="other_system" type="text" ng-model="form.request.specs.operating_system">
-                  </md-input-container>
-                </div>
-                <div class="btnRow" layout="row" layout-align="space-between center">
-                  <md-button class="md-primary" ng-click="form.tabs.selectedIndex = 0">< Back</md-button>
-                  <md-button class="md-raised md-primary" ng-disabled="techForm.$invalid" ng-click="form.submitRequest(form.request)">Submit Request ></md-button>
-                </div>
-              </form>
-            </div>
-            <div class="webForm" ng-show="form.request.type == 'Web'">
-              <form id="webForm" name="webForm">
-                <md-input-container>
-                  <label>Project Title</label>
-                  <input name="title" required type="text" class="requestTitle" ng-model="form.request.title" md-maxlength="50">
-                  <div ng-messages="webForm.title.$error" ng-show="webForm.title.$invalid && webForm.title.$touched">
-                    <div ng-message="required">Please give your project a Name.</div>
-                  </div>
-                </md-input-container>
-                <md-input-container>
-                  <label>Other Helpful Info (examples of desired look, existing content to be included, etc.)</label>
-                  <textarea name="webInfo" required md-maxlength="250" id="webInfo" ng-model="form.request.description"></textarea>
-                </md-input-container>
-                <div class="btnRow" layout="row" layout-align="space-between end">
-                  <md-button class="md-primary" ng-click="form.tabs.selectedIndex = 0">< Back</md-button>
-                  <md-button class="md-raised md-primary" ng-disabled="webForm.$invalid" ng-click="form.saveRequest(form.request, 'delivery', 2)">Delivery ></md-button>
-                </div>
-              </form>
-            </div>
+            <?!= include('hdr'); ?>
+            <?!= include('printForm'); ?>
+            <?!= include('techForm'); ?>
+            <?!= include('webForm'); ?>
           </md-content>
         </md-tab>
-        <!-- Have to enable switch to delivery for print design and web -->
-        <md-tab label="Delivery" ng-disabled="form.tabs.delivery">
+        <md-tab label="Delivery" ng-disabled="tabs.delivery">
           <md-content class="md-padding">
-            <h1 class="md-display-2">Tab Three</h1>
-            <div class="productionDelivery" ng-show="form.request.type == 'Print' || form.request.type == 'Design'">
-              <form id="deliveryForm" name="deliveryForm">
-                <md-input-container>
-                  <md-subheader class="md-primary">
-                    Delivery options:
-                    <p>Local pickup or address to be shipped to?</p>
-                  </md-subheader>
-                  <md-radio-group ng-model="form.request.delivery">
-                    <md-radio-button value="local" class="md-primary">Local Pickup</md-radio-button>
-                    <md-radio-button value="ship" class="md-primary">Ship to an address</md-radio-button>
-                  </md-radio-group>
-                </md-input-container>
-                <div class="address" ng-show="form.request.delivery == 'ship'">
-                  <md-subheader class="md-primary">Address</md-subheader>
-                  <md-input-container ng-repeat="field in form.fields.address">
-                    <label>{{field.title}}</label>
-                    <input name="field.title" required type="text" ng-model="form.request.address[field.title]">
-                    <div ng-messages="requestForm[field.name].$error" ng-show="requestForm[field.name].$invalid && requestForm[field.name].$touched">
-                      <div ng-message="required">Please enter your {{field.name}}</div>
-                    </div>
-                  </md-input-container>
-                </div>
-                <md-input-container>            
-                  <label>Desired Completion Date</label>
-                  <input name="completionDate" required type="date" id="completionDate" ng-model="request.completionDate">
-                  <div ng-messages="requestForm.completionDate.$error" ng-show="requestForm.completionDate.$invalid && requestForm.completionDate.$touched">
-                    <div ng-message="required">Please let us know your deadline.</div>
-                  </div>
-                </md-input-container>
-                <md-subheader class="md-primary">Chartfield to be charged for printing, shipping or web hosting if applicable</md-subheader>
-                <md-input-container ng-repeat="field in form.fields.chartfield">
-                  <label>{{field.title}}</label>
-                  <input name="field.title" required type="text" ng-model="form.request.address[field.title]">
-                  <div ng-messages="deliveryForm[field.name].$error" ng-show="deliveryForm[field.name].$invalid && deliveryForm[field.name].$touched">
-                    <div ng-message="required">Please enter your {{field.name}}</div>
-                  </div>
-                </md-input-container>
-                <div class="btnRow" layout="row" layout-align="space-between center">
-                  <md-button class="md-primary" ng-click="form.tabs.selectedIndex = 1">< Back</md-button>
-                  <md-button class="md-raised md-primary" ng-disabled="" ng-click="form.submitRequest(form.request)">Submit Request ></md-button>
-                </div>
-              </form>
-            </md-content>
-          </md-tab>
-        </md-tabs>
-      </div>
-    <pre>{{form.request|json}}</pre>
+            <!-- <h1 class="md-display-2">Tab Three</h1> -->
+            <?!= include('deliveryForm'); ?>
+          </md-content>
+        </md-tab>
+      </md-tabs>
+    </div>
+    <div id="thankYou" layout="column" layout-align="center center" ng-show="requestSubmitted" ng-cloak>
+      <h1 class="md-display-1">Thank you</h1>
+      <md-subhead>Thank you for giving us your info. We will get back to you as soon as we can.</md-subhead>
+    </div>
   </div>
-</body>
-
-<!-- <?!= include('js'); ?> -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-messages.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
-<script type="text/javascript" src="js.js"></script>
+  </body>
+<?!= include('js'); ?>
 </html>

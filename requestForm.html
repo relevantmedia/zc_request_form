@@ -1,0 +1,22 @@
+<form id="requestForm" name="requestForm">
+  <h1 class="md-primary md-headline">Your Contact Info</h1>
+  <p>{{request.staff.name}}</p>
+  <p>{{request.staff.email}}</p>
+
+  <md-input-container>
+    <label>Phone</label>
+    <input name="phone" required type="text" id="staffPhone" ng-model="request.staff.phone">
+    <div ng-messages="requestForm.phone.$error" ng-show="requestForm.phone.$invalid && requestForm.phone.$touched">
+      <div ng-message="required">Please enter your phone number.</div>
+    </div>
+  </md-input-container>
+  <md-input-container>
+    <h2 class="md-headline">Type of Request</h2>
+    <md-radio-group required ng-model="request.type">
+      <md-radio-button ng-repeat="type in fields.requestTypes" value="{{type.title}}" class="md-primary">{{type.content}}</md-radio-button>
+    </md-radio-group>
+  </md-input-container>
+  <div class="btnRow" layout="row" layout-align="end center">
+    <md-button class="md-raised md-primary" ng-disabled="requestForm.$invalid" ng-click="saveRequest(request, 'details', 1)">Details ></md-button>
+  </div>
+</form>

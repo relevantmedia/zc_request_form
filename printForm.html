@@ -1,0 +1,68 @@
+<div class="printForm" ng-show="request.type == 'Print' || request.type == 'Design'">
+  <form id="printForm" name="printForm">
+    <md-input-container>
+      <label>Project Title</label>
+      <input name="title" required type="text" class="requestTitle" ng-model="request.title" md-maxlength="50">
+      <div ng-messages="printForm.title.$error" ng-show="printForm.title.$invalid && printForm.title.$touched">
+        <div ng-message="required">Please give your project a Name.</div>
+      </div>
+    </md-input-container>
+    <md-input-container>
+      <h2 class="md-primary md-headline">Format Type</h2>
+      <md-radio-group name="formatType" required ng-model="request.format.type">
+        <md-radio-button ng-repeat="format in fields.formats.printFormats" value="{{format.title}}" class="md-primary">{{format.content}}</md-radio-button>
+        <md-radio-button ng-repeat="format in fields.formats.designFormats" value="{{format.title}}" class="md-primary" ng-show="request.type == 'Design'">{{format.content}}</md-radio-button>
+        <md-radio-button value="Other" class="md-primary">Other</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+      <md-input-container class="otherInput" ng-show="request.format.type == 'Other'">
+        <label>Other</label>
+        <input name="otherFormat" type="text" ng-model="request.format.other.type">
+      </md-input-container>
+    <md-input-container>
+      <h2 class="md-primary md-headline">
+        Desired Size of one piece (in inches)</h2>
+        <h4 class="md-subhead description">(not what size paper it is necessarily printer on, but the desired size of the end result)</h4>
+      <md-radio-group name="formatSize" required ng-model="request.format.size">
+        <md-radio-button ng-repeat="layout in fields.layouts" value="{{layout.title}}" class="md-primary">{{layout.content}}</md-radio-button>
+        <md-radio-button value="Other" class="md-primary">Other</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+      <md-input-container class="otherInput" ng-show="request.format.size == 'Other'">
+        <label>Other</label>
+        <input name="otherSize" type="text" ng-model="request.format.other.size">
+      </md-input-container>
+    <md-input-container>
+      <h2 class="md-primary md-headline">Printed in Color or Black & White</h2>              
+      <md-radio-group name="formatColor" required ng-model="request.format.color">
+        <md-radio-button value="color" class="md-primary">Color - (.12 / sheet)</md-radio-button>
+        <md-radio-button value="b/w" class="md-primary">Black & White - (.03 / sheet)</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+    <md-input-container>
+      <h2 class="md-primary md-headline">Desired type of paper to be used</h2>
+      <md-radio-group name="formatPaper" required ng-model="request.format.paper">
+        <md-radio-button value="copy" class="md-primary">Copy paper (20 lb) - no extra charge</md-radio-button>
+        <md-radio-button value="coated-copy" class="md-primary">Coated copy paper (20 lb) - add .05 / sheet</md-radio-button>
+        <md-radio-button value="heavyweight" class="md-primary">Cardstock (80-100 lb) - add .03 / sheet</md-radio-button>
+        <md-radio-button value="coated-heavyweight" class="md-primary">Coated cardstock (200 lb) - add .09 / sheet</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+    <md-input-container>
+      <label>Other Helpful Info (examples of desired look, existing content to be included, etc.)</label>
+      <textarea name="otherInfo" md-maxlength="250" id="otherInfo" ng-model="request.description"></textarea>
+    </md-input-container>
+    <md-input-container>
+      <label>Quantity</label>
+      <input name="quantity" required type="number" id="quantity" ng-model="request.quantity" min="50">
+      <div ng-messages="printForm.quantity.$error" ng-show="printForm.quantity.$invalid && printForm.quantity.$touched">
+        <div ng-message="required">Please let us know how many you need.</div>
+        <div ng-message="min">Quantity needs to be a minimum of 50.</div>
+      </div>
+    </md-input-container>
+    <div class="btnRow" layout="row" layout-align="space-between end">
+      <md-button class="md-primary" ng-click="tabs.selectedIndex = 0">< Back</md-button>
+      <md-button class="md-raised md-primary" layout-align="end center" ng-disabled="printForm.$invalid" ng-click="saveRequest(request, 'delivery', 2)">Delivery ></md-button>
+    </div>
+  </form>
+</div>

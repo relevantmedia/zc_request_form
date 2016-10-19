@@ -1,20 +1,24 @@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-messages.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
+
+<script>
 var app = angular.module('zcRequest', ['ngMaterial','ngMessages','ngAnimate']);
 
 app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFormCtrl($scope, $mdDialog) {
-  //var form = $scope;
-  
+  $scope.request = {};
+  $scope.requestSubmitted = false;
   $scope.getUser = function() {
     google.script.run.withSuccessHandler(User).User(); 
   }
   function User(user) {
     if(Object.keys(user).length > 0){
-        $scope.request = {};
-
       $scope.request.staff = {
         name: user.name,
         email: user.email
       };
-      console.log($scope.request.staff);
       $scope.$apply();
     }
   }
@@ -97,8 +101,24 @@ app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFor
         },
         {manufacturer:'Other PC'}
       ]
-    }
+    },
+    webServices:[
+      {title:'Domains'},
+      {title:'Web Hosting'},
+      {title:'Wordpress Theme'}
+    ]
   }
+  
+  $scope.request.web = { services:[] };
+  $scope.webServices = $scope.request.web.services;
+  $scope.toggle = function (item, list) {
+    var idx = list.indexOf(item);
+    if (idx > -1) list.splice(idx, 1);
+    else list.push(item);
+  };
+  $scope.exists = function (item, list) {
+    return list.indexOf(item) > -1;
+  };
 
   $scope.saveRequest = function(newRequest, tab, index) {
     if(newRequest) { $scope.request = newRequest; }
@@ -123,15 +143,25 @@ app.controller('zcRequestFormCtrl', ['$scope','$mdDialog', function zcRequestFor
     };
     
     function afterShowAnimation() {
-      if(request) { $scope.request = request; }
-      google.script.run.withSuccessHandler(requestCreated).createTrelloCard($scope.request);
+      if(request) { 
+        var zcRequest = {};
+        angular.copy(request, zcRequest);
+        var jsonDate = JSON.stringify(zcRequest.completionDate);
+        zcRequest.completionDate = jsonDate;
+      }
+      google.script.run.withSuccessHandler(requestCreated).createTrelloCard(zcRequest);
     }
 
     $mdDialog.show(loading);
   }
 
   function requestCreated() {
+    $scope.request = {};
     $mdDialog.hide();
+    $scope.requestSubmitted = true;
+    $scope.$apply();
   }
 
 }]);
+
+</script>

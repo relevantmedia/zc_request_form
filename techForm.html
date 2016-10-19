@@ -1,0 +1,51 @@
+<div class="techForm" ng-show="request.type == 'Tech'">
+  <form id="techForm" name="techForm">
+    <md-input-container>
+      <label>Title / Issue</label>
+      <input name="title" required type="text" class="requestTitle" ng-model="request.title" md-maxlength="50">
+      <div ng-messages="techForm.title.$error" ng-show="techForm.title.$invalid && techForm.title.$touched">
+        <div ng-message="required">Please give your project a Name.</div>
+      </div>
+    </md-input-container>
+    <md-input-container>
+      <label>Full Description</label>
+      <textarea name="description" md-maxlength="500" id="printdescription" ng-model="request.description"></textarea>
+    </md-input-container>
+    <md-input-container>
+      <h1 class="md-primary md-headline">Manufacturer</h1>
+      <md-radio-group name="computerMake" required ng-model="request.specs.make">
+        <md-radio-button ng-repeat="make in fields.techSpecs.makes" value="{{make.manufacturer}}" class="md-primary">{{make.manufacturer}}</md-radio-button>
+      </md-radio-group>
+    </md-input-container>
+    <div class="techModel" ng-show="request.specs.make">
+      <h1 class="md-primary md-headline">Make & Model</h1>
+      <md-input-container ng-show="['Apple','Dell'].indexOf(request.specs.make) >=0">
+        <md-radio-group name="computerModel" required ng-model="request.specs.model">
+          <md-radio-button ng-repeat="model in fields.techSpecs.makes[0].models" value="{{model.model}}" class="md-primary" ng-show="request.specs.make == 'Apple'">{{model.model}}</md-radio-button>
+          <md-radio-button ng-repeat="model in fields.techSpecs.makes[1].models" value="{{model.model}}" class="md-primary" ng-show="request.specs.make == 'Dell'">{{model.model}}</md-radio-button>
+        </md-radio-group>
+      </md-input-container>
+      <md-input-container ng-show="request.specs.make == 'Other PC'">
+        <label>give a brief description of your machine</label>
+        <input name="otherPC" type="text" ng-model="request.specs.model">
+      </md-input-container>
+    </div>
+    <div class="techOS" ng-show="request.specs.make">
+      <h1 class="md-primary md-headline">Operation System</h1>
+      <md-input-container ng-show="['Apple','Dell'].indexOf(request.specs.make) >=0">
+        <md-radio-group name="computerOS" required ng-model="request.specs.operating_system">
+          <md-radio-button ng-repeat="system in fields.techSpecs.makes[0].system" value="{{system.os}}" class="md-primary" ng-show="request.specs.make == 'Apple'">{{system.os}}</md-radio-button>
+          <md-radio-button ng-repeat="system in fields.techSpecs.makes[1].system" value="{{system.os}}" class="md-primary" ng-show="request.specs.make == 'Dell'">{{system.os}}</md-radio-button>
+        </md-radio-group>
+      </md-input-container>
+      <md-input-container ng-show="request.specs.make == 'Other PC'">
+        <label>let us know what operating system you are running</label>
+        <input name="other_system" type="text" ng-model="request.specs.operating_system">
+      </md-input-container>
+    </div>
+    <div class="btnRow" layout="row" layout-align="space-between center">
+      <md-button class="md-primary" ng-click="tabs.selectedIndex = 0">< Back</md-button>
+      <md-button class="md-raised md-primary" ng-disabled="techForm.$invalid" ng-click="submitRequest(request)">Submit Request ></md-button>
+    </div>
+  </form>
+</div>
